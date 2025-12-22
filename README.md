@@ -20,5 +20,7 @@ LED	10
 
 I2C LCD (SDA/SCL)	A4/A5	표준 I2C 핀 연결
 
+블루투스는 URAT 연결로 RX,TX 연결
+
 
 <img width="445" height="924" alt="image" src="https://github.com/user-attachments/assets/9d7bd1e3-c4b6-4a63-96a8-ccc75c135685" />
