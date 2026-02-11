@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+    :root {
+        --bg-color: #121212; 
+        --main-bg-color: #1e1e1e; 
+        --accent-color: #00bcd4;
+        --secondary-accent: #8bc34a; 
+        --text-color-dark: #e0e0e0; 
+        --text-color-light: #b0b0b0; 
+        --shadow: 0 4px 8px rgba(0, 0, 0, 0.4); 
+    }
+
+    body {
+        font-family: 'Malgun Gothic', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        background-color: var(--bg-color);
+        color: var(--text-color-dark);
+        margin: 0;
+        padding: 0;
+        text-align: center;
+        line-height: 1.5;
+    }
+
+    header {
+        background-color: #000000; 
+        color: var(--text-color-dark);
+        padding: 20px 15px;
+        text-align: center;
+        border-bottom: 3px solid var(--accent-color);
+        box-shadow: var(--shadow);
+    }
+    #page-title {
+        font-size: 2.2em;
+        margin: 0;
+        font-weight: 700;
+        color: var(--accent-color);
+    }
+    header p {
+        font-size: 1em;
+        margin: 5px 0 0;
+        color: var(--text-color-light);
+    }
+
+    .container {
+        max-width: 450px;
+        margin: 30px auto;
+        background-color: var(--main-bg-color);
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        transition: all 0.2s;
+    }
+
+    h2 {
+        color: var(--secondary-accent);
+        padding-bottom: 8px;
+        margin-top: 0;
+        margin-bottom: 25px;
+        font-weight: 600;
+        font-size: 1.5em;
+        border-bottom: 1px solid #333;
+        text-transform: none;
+        letter-spacing: normal;
+    }
+
+    .media-display {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        margin: 15px 0 25px 0;
+        border: 2px solid var(--accent-color);
+        border-radius: 6px;
+        display: block;
+        background-color: #2a2a2a;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+    }
+
+    #snapshot-canvas {
+        display: none;
+    }
+
+    button {
+        background-color: var(--accent-color);
+        color: #121212;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 1.1em;
+        width: 100%;
+        margin-top: 10px;
+        font-weight: bold;
+        text-transform: none;
+        letter-spacing: 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+        transition: background-color 0.2s, transform 0.1s;
+    }
+    button:hover {
+        background-color: #0097a7;
+        transform: translateY(-1px);
+    }
+    button:active {
+        background-color: #006064;
+        transform: translateY(0);
+        box-shadow: none;
+    }
+    button:disabled {
+        background-color: #555;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    #dynamic-button {
+        background-color: var(--secondary-accent);
+        color: #121212;
+    }
+    #dynamic-button:hover {
+        background-color: #7cb342;
+    }
+    #dynamic-button:disabled {
+        background-color: #555;
+    }
+
+    #result-area {
+        margin-top: 30px;
+        border-radius: 6px;
+        background-color: #252525;
+        min-height: 100px;
+        text-align: left;
+        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+    }
+
+    .result-title {
+        color: var(--accent-color);
+        display: block;
+        padding: 10px 15px;
+        font-weight: bold;
+        font-size: 1em;
+        background-color: #333;
+        border-radius: 6px 6px 0 0;
+    }
+    .result-content {
+        padding: 15px;
+        white-space: pre-wrap;
+        color: var(--text-color-dark);
+    }
+
+    .result-item {
+        margin-bottom: 15px;
+        border-left: 3px solid var(--secondary-accent);
+        padding-left: 12px;
+        line-height: 1.4;
+    }
+    .item-label {
+        font-weight: bold;
+        color: var(--accent-color);
+        display: block;
+        margin-bottom: 2px;
+        font-size: 0.9em;
+        text-transform: capitalize;
+    }
+    .item-value {
+        color: var(--text-color-light);
+    }
+
+    .loading {
+        color: var(--secondary-accent);
+        font-weight: bold;
+        display: block;
+        padding: 20px 15px;
+        text-align: center;
+    }
+    .error {
+        color: #ff9800;
+        font-weight: bold;
+        background-color: #3e2723;
+        padding: 10px;
+        border-radius: 5px;
+        text-align: center;
+    }
+
+    @media (max-width: 480px) {
+        .container {
+            max-width: 95%;
+            margin: 15px auto;
+            padding: 15px;
+        }
+        #page-title {
+            font-size: 1.8em;
+        }
+        button {
+            padding: 10px 15px;
+            font-size: 1em;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>실시간 카메라 진단</h2>
+    <p style="color: var(--text-color-light); margin-bottom: 15px;">
+        식물을 화면에 비추고 '스냅샷 촬영 및 분석'을 눌러주세요.
+    </p>
+
+    <video id="video-stream" class="media-display" autoplay playsinline style="display: none;"></video>
+    <img id="snapshot-preview" class="media-display" style="display: none;" alt="캡처된 이미지 미리보기">
+    <canvas id="snapshot-canvas"></canvas>
+
+    <button id="start-camera-button">카메라 시작</button>
+    <button id="dynamic-button" style="display: none;">스냅샷 촬영 및 분석</button>
+    <button id="retake-button" disabled style="background-color: var(--accent-color);">다시 찍기</button>
+
+    <div id="result-area">
+        <div class="result-title">분석 결과:</div>
+        <div class="result-content">
+            <p>카메라를 시작하고 스냅샷을 찍어주세요.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    const GEMINI_API_KEY = "YOUR_API_KEY_HERE";
+
+    const videoElement = document.getElementById('video-stream');
+    const snapshotPreviewElement = document.getElementById('snapshot-preview');
+    const canvasElement = document.getElementById('snapshot-canvas');
+    const startCameraButton = document.getElementById('start-camera-button');
+    const dynamicButton = document.getElementById('dynamic-button');
+    const retakeButton = document.getElementById('retake-button');
+    const resultContent = document.getElementById('result-area').querySelector('.result-content');
+
+    let currentStream = null;
+    let capturedImageBase64 = null;
+
+    async function startCamera() {
+        stopCamera();
+
+        try {
+            resultContent.innerHTML = `<p>화면에 식물을 비추고 '스냅샷 촬영 및 분석' 버튼을 누르세요.</p>`;
+            snapshotPreviewElement.style.display = 'none';
+            videoElement.style.display = 'block';
+
+            startCameraButton.style.display = 'none';
+            dynamicButton.style.display = 'block';
+            dynamicButton.disabled = true;
+            dynamicButton.textContent = "카메라 로딩 중...";
+
+            retakeButton.disabled = true;
+
+            currentStream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: "environment" },
+                audio: false
+            });
+            videoElement.srcObject = currentStream;
+
+            videoElement.onloadedmetadata = () => {
+                videoElement.play();
+                dynamicButton.textContent = "스냅샷 촬영 및 분석";
+                dynamicButton.disabled = false;
+            };
+
+        } catch (error) {
+            console.error("카메라 접근 오류:", error);
+            dynamicButton.style.display = 'none';
+            startCameraButton.style.display = 'block';
+            startCameraButton.disabled = false;
+            startCameraButton.textContent = "카메라 시작";
+            resultContent.innerHTML = `<div class="error">카메라 접근에 실패했습니다. (브라우저 설정 확인)</div>`;
+        }
+    }
+
+    function stopCamera() {
+        if (currentStream) {
+            currentStream.getTracks().forEach(track => track.stop());
+            videoElement.srcObject = null;
+            currentStream = null;
+            videoElement.style.display = 'none';
+        }
+    }
+
+    async function takeSnapshotAndAnalyze() {
+        if (!currentStream) {
+            resultContent.innerHTML = `<div class="error">카메라 스트림이 활성화되지 않았습니다.</div>`;
+            return;
+        }
+
+        dynamicButton.disabled = true;
+        dynamicButton.textContent = "분석 진행 중...";
+        resultContent.innerHTML = `<span class="loading">스냅샷 촬영 중...</span>`;
+
+        canvasElement.width = videoElement.videoWidth;
+        canvasElement.height = videoElement.videoHeight;
+        const context = canvasElement.getContext('2d');
+        context.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
+        const dataUrl = canvasElement.toDataURL('image/jpeg', 0.8);
+
+        capturedImageBase64 = dataUrl.split(',')[1];
+        snapshotPreviewElement.src = dataUrl;
+        snapshotPreviewElement.style.display = 'block';
+
+        stopCamera();
+
+        await analyzeCapturedImage();
+
+        dynamicButton.style.display = 'none';
+        retakeButton.disabled = false;
+    }
+
+    async function analyzeCapturedImage() {
+        if (!capturedImageBase64) return;
+
+        if (GEMINI_API_KEY === "YOUR_API_KEY_HERE" || !GEMINI_API_KEY) {
+            resultContent.innerHTML = `<div class="error">오류: 유효한 API 키를 입력해주세요!</div>`;
+            dynamicButton.disabled = false;
+            dynamicButton.textContent = "스냅샷 촬영 및 분석";
+            return;
+        }
+
+        resultContent.innerHTML = `<span class="loading">이미지 분석 중... (최대 10~20초 소요될 수 있습니다)</span>`;
+        retakeButton.disabled = true;
+
+        try {
+            const imagePart = {
+                inlineData: {
+                    data: capturedImageBase64,
+                    mimeType: 'image/jpeg',
+                },
+            };
+
+            const prompt = "이 이미지 속 식물의 이름을 알려주세요. 그리고 이 식물의 현재 상태(건강, 병충해 여부 등)를 간결하게 평가해주세요. 마지막으로 이 식물을 잘 키우기 위한 생장 조건(물 주기, 햇빛, 온도)을 요약해서 알려주십시오. 답변은 각 정보를 '---'로 구분하여 세 가지 항목으로만 출력해주세요.";
+
+            const requestBody = {
+                contents: [{
+                    parts: [
+                        imagePart,
+                        { text: prompt }
+                    ]
+                }],
+                generationConfig: {
+                    maxOutputTokens: 2048
+                }
+            };
+
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                let errorMessage = `API 호출 실패: HTTP ${response.status} (${response.statusText})`;
+                if (errorData?.error?.message) {
+                    errorMessage += `<br>상세 내용: ${errorData.error.message}`;
+                }
+                throw new Error(errorMessage);
+            }
+
+            const data = await response.json();
+            const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text || "이미지를 분석하는 데 실패했거나 응답이 비어있습니다.";
+            displayStructuredResult(resultText);
+
+        } catch (error) {
+            const displayMessage = error.message.includes("API 호출 실패")
+                ? error.message
+                : `네트워크 오류가 발생했습니다. (브라우저 콘솔 F12 확인)`;
+
+            resultContent.innerHTML = `<div class="error">오류 발생: ${displayMessage}</div>`;
+            console.error("최종 오류:", error);
+        } finally {
+            retakeButton.disabled = false;
+        }
+    }
+
+    function displayStructuredResult(rawText) {
+        const resultArea = document.getElementById('result-area');
+        const resultContent = resultArea.querySelector('.result-content');
+
+        const items = rawText.split('---').map(item => item.trim()).filter(item => item.length > 0);
+
+        if (items.length !== 3) {
+            resultContent.innerHTML = `<div class="error">구조화된 응답(3항목)을 받지 못했습니다. 원본 텍스트:<br>${rawText}</div>`;
+            return;
+        }
+
+        const labels = ["식물 이름", "현재 상태 평가", "최적 생장 조건"];
+        let htmlContent = '';
+
+        items.forEach((value, index) => {
+            const label = labels[index] || `항목 ${index + 1}`;
+            htmlContent += `
+                <div class="result-item">
+                    <span class="item-label">${label}:</span>
+                    <span class="item-value">${value}</span>
+                </div>
+            `;
+        });
+
+        resultContent.innerHTML = htmlContent;
+    }
+
+    startCameraButton.addEventListener('click', startCamera);
+    dynamicButton.addEventListener('click', takeSnapshotAndAnalyze);
+
+    retakeButton.addEventListener('click', () => {
+        capturedImageBase64 = null;
+        snapshotPreviewElement.src = '';
+        snapshotPreviewElement.style.display = 'none';
+
+        stopCamera();
+
+        startCameraButton.style.display = 'block';
+        startCameraButton.disabled = false;
+        startCameraButton.textContent = "카메라 시작";
+
+        dynamicButton.style.display = 'none';
+        retakeButton.disabled = true;
+
+        resultContent.innerHTML = `<p>이전 분석 데이터가 초기화되었습니다. '카메라 시작' 버튼을 눌러 촬영을 준비하세요.</p>`;
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        videoElement.style.display = 'none';
+        snapshotPreviewElement.style.display = 'none';
+        dynamicButton.style.display = 'none';
+        retakeButton.disabled = true;
+        startCameraButton.style.display = 'block';
+        startCameraButton.disabled = false;
+        startCameraButton.textContent = "카메라 시작";
+        resultContent.innerHTML = `<p>카메라를 시작하고 스냅샷을 찍어주세요.</p>`;
+    });
+</script>
+</body>
+</html>
